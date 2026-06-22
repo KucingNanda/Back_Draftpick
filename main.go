@@ -4,6 +4,7 @@ import (
 	"draftpick-api/config" // Mengambil fungsi dari folder config
 	"draftpick-api/router"
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -34,13 +35,24 @@ func main() {
 
 	// CORS
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:5173", // Mengizinkan port Vite React
+		AllowOrigins: "http://localhost:5173, https://front-draftpick.vercel.app", // Mengizinkan port lokal dan Vercel
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 	}))
 
 	// Panggil Router
 	router.SetupRoutes(app)
 
-	// Jalankan server di port 3000
-	log.Fatal(app.Listen(":3000"))
+	// Setup port dinamis untuk keperluan deployment (Alwaysdata/Render)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000" // Port default lokal
+	}
+
+	host := os.Getenv("HOST")
+	if host == "" {
+		host = "0.0.0.0" // Bind ke semua interface
+	}
+
+	// Jalankan server
+	log.Fatal(app.Listen(host + ":" + port))
 }
