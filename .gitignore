@@ -1,0 +1,25 @@
+# Folder Vendor / Build
+main
+main.exe
+*.exe
+*.test
+*.out
+
+# Environment Variables
+.env
+.env.local
+.env.production
+.env.development
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+
+# Log files
+*.log

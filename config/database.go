@@ -1,0 +1,89 @@
+package config
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	"draftpick-api/model" // Import folder model kita
+
+	"github.com/joho/godotenv"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+)
+
+var DB *gorm.DB
+
+func ConnectDB() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Gagal membaca file .env")
+	}
+
+	dsn := os.Getenv("SUPABASE_DSN")
+	if dsn == "" {
+		host := os.Getenv("DB_HOST")
+		user := os.Getenv("DB_USER")
+		password := os.Getenv("DB_PASSWORD")
+		dbname := os.Getenv("DB_NAME")
+		port := os.Getenv("DB_PORT")
+		dsn = fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Jakarta", host, user, password, dbname, port)
+	}
+
+	database, err := gorm.Open(postgres.New(postgres.Config{
+		DSN:                  dsn,
+		PreferSimpleProtocol: true, // WAJIB untuk Supabase connection pooler (port 6543)
+	}), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Error),
+	})
+	if err != nil {
+		log.Fatal("❌ Gagal terhubung ke database PostgreSQL:\n", err)
+	}
+
+	DB = database
+	fmt.Println("✅ Koneksi ke PostgreSQL BERHASIL!")
+
+	// Menjalankan Auto Migration untuk membuat tabel otomatis
+	err = DB.AutoMigrate(&model.Karakter{}, &model.User{}, &model.Peserta{}, &model.PesertaKarakter{}, &model.Settings{}, &model.Bgm{}, &model.History{})
+	if err != nil {
+		log.Fatal("❌ Gagal melakukan migrasi database:\n", err)
+	}
+
+	// Buat pengaturan default jika belum ada
+	var count int64
+	DB.Model(&model.Settings{}).Count(&count)
+	if count == 0 {
+		DB.Create(&model.Settings{
+			MaxCost:     7,
+			Free4StarId: 0,
+			BgmUrl:      "",
+		})
+	}
+	// Hash password
+	adminHash, _ := bcrypt.GenerateFromPassword([]byte("kucing0909"), bcrypt.DefaultCost)
+	pesertaHash, _ := bcrypt.GenerateFromPassword([]byte("peserta123"), bcrypt.DefaultCost)
+
+	// Setup kredensial admin
+	var adminUser model.User
+	if err := DB.Where("username = ?", "kucingabu").First(&adminUser).Error; err != nil {
+		DB.Create(&model.User{
+			Username: "kucingabu",
+			Password: string(adminHash),
+			Role:     "wasit",
+		})
+	}
+
+	// Setup kredensial peserta latihan
+	var pesertaUser model.User
+	if err := DB.Where("username = ?", "peserta").First(&pesertaUser).Error; err != nil {
+		DB.Create(&model.User{
+			Username: "peserta",
+			Password: string(pesertaHash),
+			Role:     "peserta",
+		})
+	}
+
+	fmt.Println("✅ Migrasi Tabel Database Selesai!")
+}

@@ -1,0 +1,915 @@
+basePath: /
+definitions:
+  model.Bgm:
+    properties:
+      id:
+        type: integer
+      nama:
+        type: string
+      url:
+        type: string
+    type: object
+  model.History:
+    properties:
+      created_at:
+        type: string
+      draftData:
+        description: Berisi JSON DraftState
+        type: string
+      id:
+        type: integer
+      playerA:
+        type: string
+      playerB:
+        type: string
+      role:
+        description: '"wasit" atau "peserta"'
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.Karakter:
+    properties:
+      cost:
+        description: 0 atau 1
+        type: integer
+      id:
+        type: integer
+      imageUrl:
+        description: Link Cloudinary
+        type: string
+      nama:
+        type: string
+      rarity:
+        description: 4 Star, 5 Star Limited, dll
+        type: string
+      senjata:
+        description: Sword, Claymore, Catalyst, Bow, Polearm
+        type: string
+      vision:
+        description: Anemo, Geo, Electro, Dendro, Hydro, Pyro, Cryo, Flex
+        type: string
+    type: object
+  model.Peserta:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      karakters:
+        items:
+          $ref: '#/definitions/model.PesertaKarakter'
+        type: array
+      nama:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.PesertaKarakter:
+    properties:
+      id:
+        type: integer
+      isC1:
+        type: boolean
+      karakter:
+        $ref: '#/definitions/model.Karakter'
+      karakterId:
+        type: integer
+      pesertaId:
+        type: integer
+    type: object
+  model.Settings:
+    properties:
+      bgmUrl:
+        type: string
+      free4StarHalf:
+        type: string
+      free4StarId:
+        type: integer
+      id:
+        type: integer
+      maxCost:
+        type: integer
+    type: object
+  model.User:
+    properties:
+      id:
+        type: integer
+      role:
+        type: string
+      username:
+        type: string
+    type: object
+host: 127.0.0.1:3000
+info:
+  contact:
+    name: Praktikum Pemrograman III
+  description: Dokumentasi API backend DraftPick menggunakan Golang Fiber, GORM, PostgreSQL,
+    dan JWT.
+  title: Draft Pick API
+  version: "1.0"
+paths:
+  /api/bgm:
+    get:
+      description: Mengambil daftar seluruh BGM
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Bgm'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Ambil semua data BGM
+      tags:
+      - BGM
+    post:
+      consumes:
+      - application/json
+      description: Menambahkan data BGM baru
+      parameters:
+      - description: Payload BGM
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Bgm'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Bgm'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Tambah data BGM
+      tags:
+      - BGM
+  /api/bgm/{id}:
+    delete:
+      description: Menghapus data BGM berdasarkan ID
+      parameters:
+      - description: ID BGM
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Hapus data BGM
+      tags:
+      - BGM
+    get:
+      description: Mengambil satu data BGM spesifik berdasarkan ID
+      parameters:
+      - description: ID BGM
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Bgm'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Ambil detail data BGM berdasarkan ID
+      tags:
+      - BGM
+    put:
+      consumes:
+      - application/json
+      description: Mengubah data BGM berdasarkan ID
+      parameters:
+      - description: ID BGM
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Payload update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Bgm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Bgm'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Ubah data BGM
+      tags:
+      - BGM
+  /api/change-password:
+    put:
+      consumes:
+      - application/json
+      description: Mengubah password user yang sedang login
+      parameters:
+      - description: Payload ganti password (old_password, new_password)
+        in: body
+        name: request
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Ubah password user
+      tags:
+      - Auth
+  /api/history:
+    get:
+      description: Mengambil daftar seluruh history match
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.History'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Ambil riwayat pertandingan
+      tags:
+      - History
+    post:
+      consumes:
+      - application/json
+      description: Menyimpan data history match
+      parameters:
+      - description: Payload history
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.History'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Simpan riwayat pertandingan
+      tags:
+      - History
+  /api/history/{id}:
+    delete:
+      description: Menghapus history match berdasarkan ID
+      parameters:
+      - description: ID History
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Hapus riwayat pertandingan
+      tags:
+      - History
+  /api/karakter:
+    get:
+      description: Mengambil daftar seluruh karakter
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Karakter'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Ambil semua data karakter
+      tags:
+      - Karakter
+    post:
+      consumes:
+      - application/json
+      description: Menambahkan data karakter baru (hanya wasit)
+      parameters:
+      - description: Payload karakter
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Karakter'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Karakter'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Tambah data karakter
+      tags:
+      - Karakter
+  /api/karakter/{id}:
+    delete:
+      description: Menghapus data karakter berdasarkan ID (hanya wasit)
+      parameters:
+      - description: ID Karakter
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Hapus data karakter
+      tags:
+      - Karakter
+    get:
+      description: Mengambil satu data karakter spesifik berdasarkan ID
+      parameters:
+      - description: ID Karakter
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Karakter'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Ambil detail data karakter berdasarkan ID
+      tags:
+      - Karakter
+    put:
+      consumes:
+      - application/json
+      description: Mengubah data karakter berdasarkan ID (hanya wasit)
+      parameters:
+      - description: ID Karakter
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Payload update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Karakter'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Karakter'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Ubah data karakter
+      tags:
+      - Karakter
+  /api/login:
+    post:
+      consumes:
+      - application/json
+      description: Melakukan autentikasi user dan mengembalikan token JWT
+      parameters:
+      - description: Payload login (username, password)
+        in: body
+        name: request
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login user
+      tags:
+      - Auth
+  /api/peserta:
+    get:
+      description: Mengambil daftar seluruh peserta
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Peserta'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Ambil semua data peserta
+      tags:
+      - Peserta
+    post:
+      consumes:
+      - application/json
+      description: Menambahkan data peserta baru
+      parameters:
+      - description: Payload peserta
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Peserta'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Peserta'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Tambah data peserta
+      tags:
+      - Peserta
+  /api/peserta/{id}:
+    delete:
+      description: Menghapus data peserta berdasarkan ID
+      parameters:
+      - description: ID Peserta
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Hapus data peserta
+      tags:
+      - Peserta
+    get:
+      description: Mengambil satu data peserta spesifik berdasarkan ID
+      parameters:
+      - description: ID Peserta
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Peserta'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Ambil detail data peserta berdasarkan ID
+      tags:
+      - Peserta
+    put:
+      consumes:
+      - application/json
+      description: Mengubah data peserta berdasarkan ID
+      parameters:
+      - description: ID Peserta
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Payload update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Peserta'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Peserta'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Ubah data peserta
+      tags:
+      - Peserta
+  /api/register:
+    post:
+      consumes:
+      - application/json
+      description: Mendaftarkan peserta atau admin baru ke dalam sistem
+      parameters:
+      - description: Payload register (username, password, role)
+        in: body
+        name: request
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Register user baru
+      tags:
+      - Auth
+  /api/settings:
+    get:
+      description: Mengambil konfigurasi draft pick turnamen
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Settings'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Ambil pengaturan turnamen
+      tags:
+      - Settings
+    put:
+      consumes:
+      - application/json
+      description: Memperbarui konfigurasi max cost, bgm, dan special character
+      parameters:
+      - description: Payload settings
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Settings'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Ubah pengaturan turnamen
+      tags:
+      - Settings
+  /api/users:
+    get:
+      description: Mengambil semua data pengguna dengan role peserta
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.User'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Ambil daftar akun pengguna (Peserta)
+      tags:
+      - Users
+schemes:
+- http
+- https
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
