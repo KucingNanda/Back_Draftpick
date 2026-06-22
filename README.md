@@ -22,9 +22,9 @@ Aplikasi *backend* super cepat berbasis **Golang** (Framework Fiber) untuk menyu
    ```env
    DB_HOST=postgresql-kucing27.alwaysdata.net
    DB_PORT=5432
-   DB_USER=kucing27
-   DB_PASSWORD=secret
-   DB_NAME=kucing27_draftpick
+   DB_USER=yourdbuser
+   DB_PASSWORD=yoursecret
+   DB_NAME=yourdbname
    
    CLOUDINARY_URL=cloudinary://<API_KEY>:<API_SECRET>@<CLOUD_NAME>
    
