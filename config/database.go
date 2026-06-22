@@ -67,7 +67,8 @@ func ConnectDB() {
 
 	// Setup kredensial admin
 	var adminUser model.User
-	if err := DB.Where("username = ?", "kucingabu").First(&adminUser).Error; err != nil {
+	DB.Where("username = ?", "kucingabu").Find(&adminUser)
+	if adminUser.ID == 0 {
 		DB.Create(&model.User{
 			Username: "kucingabu",
 			Password: string(adminHash),
@@ -77,7 +78,8 @@ func ConnectDB() {
 
 	// Setup kredensial peserta latihan
 	var pesertaUser model.User
-	if err := DB.Where("username = ?", "peserta").First(&pesertaUser).Error; err != nil {
+	DB.Where("username = ?", "peserta").Find(&pesertaUser)
+	if pesertaUser.ID == 0 {
 		DB.Create(&model.User{
 			Username: "peserta",
 			Password: string(pesertaHash),
