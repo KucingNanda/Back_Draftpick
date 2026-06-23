@@ -6,9 +6,9 @@ import (
 	"os"
 
 	"draftpick-api/model" // Import folder model kita
+	"draftpick-api/utils"
 
 	"github.com/joho/godotenv"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -61,9 +61,9 @@ func ConnectDB() {
 			BgmUrl:      "",
 		})
 	}
-	// Hash password
-	adminHash, _ := bcrypt.GenerateFromPassword([]byte("kucing0909"), bcrypt.DefaultCost)
-	pesertaHash, _ := bcrypt.GenerateFromPassword([]byte("peserta123"), bcrypt.DefaultCost)
+	// Hash password menggunakan utils
+	adminHash, _ := utils.HashPassword("kucing0909")
+	pesertaHash, _ := utils.HashPassword("peserta123")
 
 	// Setup kredensial admin
 	var adminUser model.User
@@ -71,7 +71,7 @@ func ConnectDB() {
 	if adminUser.ID == 0 {
 		DB.Create(&model.User{
 			Username: "kucingabu",
-			Password: string(adminHash),
+			Password: adminHash,
 			Role:     "wasit",
 		})
 	}
@@ -82,7 +82,7 @@ func ConnectDB() {
 	if pesertaUser.ID == 0 {
 		DB.Create(&model.User{
 			Username: "peserta",
-			Password: string(pesertaHash),
+			Password: pesertaHash,
 			Role:     "peserta",
 		})
 	}

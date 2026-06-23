@@ -3,12 +3,12 @@ package handler
 import (
 	"draftpick-api/config"
 	"draftpick-api/model"
+	"draftpick-api/utils"
 	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // GenerateJWT membuat token JWT untuk user
@@ -55,8 +55,8 @@ func Register(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Username dan password wajib diisi"})
 	}
 
-	// Hash password menggunakan bcrypt
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+	// Hash password menggunakan utils
+	hashedPassword, err := utils.HashPassword(input.Password)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Gagal mengenkripsi password"})
 	}
@@ -68,7 +68,7 @@ func Register(c *fiber.Ctx) error {
 
 	newUser := model.User{
 		Username: input.Username,
-		Password: string(hashedPassword),
+		Password: hashedPassword,
 		Role:     role,
 	}
 
@@ -114,9 +114,8 @@ func Login(c *fiber.Ctx) error {
 		return c.Status(401).JSON(fiber.Map{"error": "Username tidak ditemukan"})
 	}
 
-	// Verifikasi hash bcrypt
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
-	if err != nil {
+	// Verifikasi hash
+	if !utils.CheckPasswordHash(input.Password, user.Password) {
 		return c.Status(401).JSON(fiber.Map{"error": "Password salah"})
 	}
 
@@ -165,17 +164,17 @@ func ChangePassword(c *fiber.Ctx) error {
 	}
 
 	// Verifikasi password lama
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.OldPassword)); err != nil {
+	if !utils.CheckPasswordHash(input.OldPassword, user.Password) {
 		return c.Status(401).JSON(fiber.Map{"error": "Password lama salah"})
 	}
 
 	// Hash password baru
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.NewPassword), bcrypt.DefaultCost)
+	hashedPassword, err := utils.HashPassword(input.NewPassword)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Gagal mengenkripsi password baru"})
 	}
 
-	user.Password = string(hashedPassword)
+	user.Password = hashedPassword
 	config.DB.Save(&user)
 
 	return c.JSON(fiber.Map{"message": "Password berhasil diubah"})
