@@ -19,7 +19,7 @@ var DB *gorm.DB
 func ConnectDB() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Gagal membaca file .env")
+		log.Println("Peringatan: Gagal membaca file .env, menggunakan OS Environment Variables")
 	}
 
 	dsn := os.Getenv("SUPABASE_DSN")

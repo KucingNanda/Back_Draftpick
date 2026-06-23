@@ -10,7 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 
-	"draftpick-api/docs"
+	docs "draftpick-api/docs"
 )
 
 // @title Draft Pick API
@@ -27,12 +27,6 @@ func main() {
 	// Panggil fungsi koneksi ke database sebelum server menyala
 	config.ConnectDB()
 
-	// Setup host dinamis untuk Swagger UI (Railway)
-	swaggerHost := os.Getenv("SWAGGER_HOST")
-	if swaggerHost != "" {
-		docs.SwaggerInfo.Host = swaggerHost
-	}
-
 	// Inisialisasi Fiber
 	app := fiber.New()
 
@@ -47,6 +41,13 @@ func main() {
 
 	// Panggil Router
 	router.SetupRoutes(app)
+
+	// Setup Swagger Host
+	swaggerHost := os.Getenv("SWAGGER_HOST")
+	if swaggerHost == "" {
+		swaggerHost = "127.0.0.1:3000" // Fallback untuk lokal
+	}
+	docs.SwaggerInfo.Host = swaggerHost
 
 	// Setup port dinamis untuk keperluan deployment (Alwaysdata/Render)
 	port := os.Getenv("PORT")
