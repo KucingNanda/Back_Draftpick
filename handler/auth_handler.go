@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"draftpick-api/config"
 	"draftpick-api/model"
+	"draftpick-api/repository"
 	"draftpick-api/utils"
 	"os"
 	"time"
@@ -72,7 +72,7 @@ func Register(c *fiber.Ctx) error {
 		Role:     role,
 	}
 
-	if err := config.DB.Create(&newUser).Error; err != nil {
+	if err := repository.CreateUser(&newUser); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Username mungkin sudah digunakan"})
 	}
 
@@ -108,9 +108,8 @@ func Login(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Input tidak valid"})
 	}
 
-	var user model.User
-	result := config.DB.Where("username = ?", input.Username).First(&user)
-	if result.Error != nil {
+	user, err := repository.GetUserByUsername(input.Username)
+	if err != nil {
 		return c.Status(401).JSON(fiber.Map{"error": "Username tidak ditemukan"})
 	}
 
@@ -158,8 +157,8 @@ func ChangePassword(c *fiber.Ctx) error {
 
 	userId := c.Locals("user_id") // Diambil dari token JWT
 
-	var user model.User
-	if err := config.DB.First(&user, userId).Error; err != nil {
+	user, err := repository.GetUserByID(userId)
+	if err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "User tidak ditemukan"})
 	}
 
@@ -175,7 +174,7 @@ func ChangePassword(c *fiber.Ctx) error {
 	}
 
 	user.Password = hashedPassword
-	config.DB.Save(&user)
+	repository.SaveUser(&user)
 
 	return c.JSON(fiber.Map{"message": "Password berhasil diubah"})
 }

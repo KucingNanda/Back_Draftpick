@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"draftpick-api/config"
 	"draftpick-api/model"
+	"draftpick-api/repository"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -41,18 +41,17 @@ func SaveHistory(c *fiber.Ctx) error {
 		limit = 20
 	}
 
-	var count int64
-	config.DB.Model(&model.History{}).Where("role = ?", req.Role).Count(&count)
+	count, _ := repository.GetHistoryCountByRole(req.Role)
 
 	if count >= limit {
 		// Limit tercapai, timpa riwayat yang paling lama (UpdatedAt paling tua)
-		var oldest model.History
-		if err := config.DB.Where("role = ?", req.Role).Order("updated_at asc").First(&oldest).Error; err == nil {
+		oldest, err := repository.GetOldestHistoryByRole(req.Role)
+		if err == nil {
 			oldest.PlayerA = req.PlayerA
 			oldest.PlayerB = req.PlayerB
 			oldest.DraftData = req.DraftData
 			// GORM otomatis memperbarui UpdatedAt
-			config.DB.Save(&oldest)
+			repository.SaveExistingHistory(&oldest)
 			return c.JSON(fiber.Map{"message": "Riwayat lama berhasil ditimpa", "history": oldest})
 		}
 	}
@@ -65,7 +64,7 @@ func SaveHistory(c *fiber.Ctx) error {
 		DraftData: req.DraftData,
 	}
 
-	if err := config.DB.Create(&newHistory).Error; err != nil {
+	if err := repository.SaveHistory(&newHistory); err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Gagal menyimpan riwayat"})
 	}
 
@@ -86,9 +85,7 @@ func GetHistories(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Parameter role diperlukan"})
 	}
 
-	var histories []model.History
-	// Mengurutkan berdasarkan yang terbaru diedit/ditimpa/dibuat
-	config.DB.Where("role = ?", role).Order("updated_at desc").Find(&histories)
+	histories, _ := repository.GetHistoriesByRole(role)
 
 	return c.JSON(histories)
 }
@@ -106,7 +103,7 @@ func GetHistories(c *fiber.Ctx) error {
 // @Router /api/history/{id} [delete]
 func DeleteHistory(c *fiber.Ctx) error {
 	id := c.Params("id")
-	if err := config.DB.Delete(&model.History{}, id).Error; err != nil {
+	if err := repository.DeleteHistory(id); err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Gagal menghapus riwayat"})
 	}
 	return c.JSON(fiber.Map{"message": "Riwayat berhasil dihapus"})

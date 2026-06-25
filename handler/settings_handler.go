@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"draftpick-api/config"
 	"draftpick-api/model"
+	"draftpick-api/repository"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -17,8 +17,8 @@ import (
 // @Failure 500 {object} map[string]string
 // @Router /api/settings [get]
 func GetSettings(c *fiber.Ctx) error {
-	var settings model.Settings
-	if err := config.DB.First(&settings).Error; err != nil {
+	settings, err := repository.GetSettings()
+	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Gagal mengambil pengaturan"})
 	}
 
@@ -44,8 +44,8 @@ func UpdateSettings(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Data pengaturan tidak valid"})
 	}
 
-	var settings model.Settings
-	if err := config.DB.First(&settings).Error; err != nil {
+	settings, err := repository.GetSettings()
+	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Gagal menemukan pengaturan"})
 	}
 
@@ -60,7 +60,7 @@ func UpdateSettings(c *fiber.Ctx) error {
 	
 	settings.BgmUrl = input.BgmUrl
 
-	if err := config.DB.Save(&settings).Error; err != nil {
+	if err := repository.SaveSettings(&settings); err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Gagal menyimpan pengaturan"})
 	}
 

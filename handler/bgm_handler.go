@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"draftpick-api/config"
 	"draftpick-api/model"
+	"draftpick-api/repository"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -16,8 +16,8 @@ import (
 // @Failure 500 {object} map[string]string
 // @Router /api/bgm [get]
 func GetBgms(c *fiber.Ctx) error {
-	var bgms []model.Bgm
-	if err := config.DB.Find(&bgms).Error; err != nil {
+	bgms, err := repository.GetAllBgm()
+	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Gagal mengambil data BGM"})
 	}
 	return c.JSON(bgms)
@@ -35,8 +35,8 @@ func GetBgms(c *fiber.Ctx) error {
 // @Router /api/bgm/{id} [get]
 func GetBgmByID(c *fiber.Ctx) error {
 	id := c.Params("id")
-	var bgm model.Bgm
-	if err := config.DB.First(&bgm, id).Error; err != nil {
+	bgm, err := repository.GetBgmByID(id)
+	if err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "BGM tidak ditemukan"})
 	}
 	return c.JSON(bgm)
@@ -64,7 +64,7 @@ func AddBgm(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"message": "nama dan url wajib diisi"})
 	}
 
-	if err := config.DB.Create(&input).Error; err != nil {
+	if err := repository.CreateBgm(&input); err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Gagal menyimpan BGM"})
 	}
 
@@ -87,9 +87,8 @@ func AddBgm(c *fiber.Ctx) error {
 // @Router /api/bgm/{id} [put]
 func UpdateBgm(c *fiber.Ctx) error {
 	id := c.Params("id")
-	var bgm model.Bgm
-
-	if err := config.DB.First(&bgm, id).Error; err != nil {
+	bgm, err := repository.GetBgmByID(id)
+	if err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "BGM tidak ditemukan"})
 	}
 
@@ -107,7 +106,7 @@ func UpdateBgm(c *fiber.Ctx) error {
 		bgm.Url = input.Url
 	}
 
-	if err := config.DB.Save(&bgm).Error; err != nil {
+	if err := repository.SaveBgm(&bgm); err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Gagal mengupdate BGM"})
 	}
 
@@ -127,7 +126,7 @@ func UpdateBgm(c *fiber.Ctx) error {
 // @Router /api/bgm/{id} [delete]
 func DeleteBgm(c *fiber.Ctx) error {
 	id := c.Params("id")
-	if err := config.DB.Delete(&model.Bgm{}, id).Error; err != nil {
+	if err := repository.DeleteBgm(id); err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Gagal menghapus BGM"})
 	}
 
