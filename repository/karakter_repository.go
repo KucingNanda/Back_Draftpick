@@ -39,12 +39,16 @@ func DeleteKarakter(id string) error {
 func UpdateKarakter(id string, karakter *model.Karakter) error {
 	// Menggunakan map agar nilai 0 (seperti Cost) tetap di-update oleh GORM
 	result := config.DB.Model(&model.Karakter{}).Where("id = ?", id).Updates(map[string]interface{}{
-		"nama":      karakter.Nama,
-		"vision":    karakter.Vision,
-		"senjata":   karakter.Senjata,
-		"rarity":    karakter.Rarity,
-		"cost":      karakter.Cost,
-		"image_url": karakter.ImageURL,
+		"nama":        karakter.Nama,
+		"elemen":      karakter.Elemen,
+		"senjata":     karakter.Senjata,
+		"rarity":      karakter.Rarity,
+		"cost":        karakter.Cost,
+		"image_url":   karakter.ImageURL,
+		"konstelasi":  karakter.Konstelasi,
+		"ulang_tahun": karakter.UlangTahun,
+		"region":      karakter.Region,
+		"sinergi":     karakter.Sinergi,
 	})
 	return result.Error
 }

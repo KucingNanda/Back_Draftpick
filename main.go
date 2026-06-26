@@ -11,7 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 
-	docs "draftpick-api/docs"
+	_ "draftpick-api/docs"
 )
 
 // @title Draft Pick API
