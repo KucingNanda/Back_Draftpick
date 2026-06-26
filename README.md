@@ -1,6 +1,7 @@
 # Draft Pick Backend
 
 **Live API (Railway):** [https://backdraftpick-production.up.railway.app](https://backdraftpick-production.up.railway.app)
+
 **Swagger UI:** [https://backdraftpick-production.up.railway.app/docs](https://backdraftpick-production.up.railway.app/docs)
 
 Aplikasi *backend* super cepat berbasis **Golang** (Framework Fiber) untuk menyuplai *API endpoint* ke aplikasi simulasi *Draft Pick*. Dibekali dengan sistem manajemen database ORM otomatis via **GORM** dan **PostgreSQL**.
