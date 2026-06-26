@@ -11,7 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 
-	_ "draftpick-api/docs"
+	docs "draftpick-api/docs"
 )
 
 // @title Draft Pick API
@@ -38,6 +38,13 @@ func main() {
 
 	// Panggil Router
 	router.SetupRoutes(app)
+
+	// Setup Swagger Host secara dinamis dari Railway
+	swaggerHost := os.Getenv("RAILWAY_PUBLIC_DOMAIN")
+	if swaggerHost == "" {
+		swaggerHost = "127.0.0.1:3000" // Fallback untuk lokal
+	}
+	docs.SwaggerInfo.Host = swaggerHost
 
 	// Setup port dinamis untuk keperluan deployment (Alwaysdata/Render)
 	port := os.Getenv("PORT")
