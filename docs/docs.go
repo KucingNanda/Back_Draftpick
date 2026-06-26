@@ -1293,11 +1293,18 @@ const docTemplate = `{
                     "description": "0 atau 1",
                     "type": "integer"
                 },
+                "elemen": {
+                    "description": "Anemo, Geo, Electro, Dendro, Hydro, Pyro, Cryo, Flex",
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
                 "imageUrl": {
                     "description": "Link Cloudinary",
+                    "type": "string"
+                },
+                "konstelasi": {
                     "type": "string"
                 },
                 "nama": {
@@ -1307,12 +1314,17 @@ const docTemplate = `{
                     "description": "4 Star, 5 Star Limited, dll",
                     "type": "string"
                 },
+                "region": {
+                    "type": "string"
+                },
                 "senjata": {
                     "description": "Sword, Claymore, Catalyst, Bow, Polearm",
                     "type": "string"
                 },
-                "vision": {
-                    "description": "Anemo, Geo, Electro, Dendro, Hydro, Pyro, Cryo, Flex",
+                "sinergi": {
+                    "type": "string"
+                },
+                "ulangTahun": {
                     "type": "string"
                 }
             }
