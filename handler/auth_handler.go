@@ -35,17 +35,13 @@ func GenerateJWT(user model.User) (string, error) {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param request body map[string]string true "Payload register (username, password, role)"
+// @Param request body model.AuthRequest true "Payload register (username, password, role)"
 // @Success 201 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
 // @Failure 500 {object} map[string]interface{}
 // @Router /api/register [post]
 func Register(c *fiber.Ctx) error {
-	var input struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-		Role     string `json:"role"`
-	}
+	var input model.AuthRequest
 
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Input tidak valid"})
@@ -92,17 +88,14 @@ func Register(c *fiber.Ctx) error {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param request body map[string]string true "Payload login (username, password)"
+// @Param request body model.LoginRequest true "Payload login (username, password)"
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
 // @Failure 401 {object} map[string]interface{}
 // @Failure 500 {object} map[string]interface{}
 // @Router /api/login [post]
 func Login(c *fiber.Ctx) error {
-	var input struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
+	var input model.LoginRequest
 
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Input tidak valid"})
@@ -138,7 +131,7 @@ func Login(c *fiber.Ctx) error {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param request body map[string]string true "Payload ganti password (old_password, new_password)"
+// @Param request body model.ChangePasswordRequest true "Payload ganti password (old_password, new_password)"
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
 // @Failure 401 {object} map[string]interface{}
@@ -146,10 +139,7 @@ func Login(c *fiber.Ctx) error {
 // @Failure 500 {object} map[string]interface{}
 // @Router /api/change-password [put]
 func ChangePassword(c *fiber.Ctx) error {
-	var input struct {
-		OldPassword string `json:"old_password"`
-		NewPassword string `json:"new_password"`
-	}
+	var input model.ChangePasswordRequest
 
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Input tidak valid"})

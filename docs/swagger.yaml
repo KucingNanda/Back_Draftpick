@@ -1,111 +1,173 @@
 basePath: /
 definitions:
+  model.AuthRequest:
+    properties:
+      password:
+        example: admin123
+        type: string
+      role:
+        example: wasit
+        type: string
+      username:
+        example: admin
+        type: string
+    type: object
   model.Bgm:
     properties:
       id:
+        example: 1
         type: integer
       nama:
+        example: Let the Wind Tell You
         type: string
       url:
+        example: https://res.cloudinary.com/.../audio.mp3
+        type: string
+    type: object
+  model.ChangePasswordRequest:
+    properties:
+      new_password:
+        example: admin456
+        type: string
+      old_password:
+        example: admin123
         type: string
     type: object
   model.History:
     properties:
       created_at:
+        example: "2026-06-26T12:00:00Z"
         type: string
       draftData:
         description: Berisi JSON DraftState
+        example: '{"turn": 1, "phase": "ban"}'
         type: string
       id:
+        example: 1
         type: integer
       playerA:
+        example: Nanda
         type: string
       playerB:
+        example: Rizky
         type: string
       role:
         description: '"wasit" atau "peserta"'
+        example: wasit
         type: string
       updated_at:
+        example: "2026-06-26T12:00:00Z"
         type: string
     type: object
   model.Karakter:
     properties:
       cost:
-        description: 0 atau 1
+        example: 1
         type: integer
       elemen:
-        description: Anemo, Geo, Electro, Dendro, Hydro, Pyro, Cryo, Flex
+        example: Geo
         type: string
       id:
+        example: 1
         type: integer
       imageUrl:
-        description: Link Cloudinary
+        example: https://res.cloudinary.com/.../zhongli.png
         type: string
       konstelasi:
+        example: Lapis Dei
         type: string
       nama:
+        example: Zhongli
         type: string
       rarity:
-        description: 4 Star, 5 Star Limited, dll
+        example: 5 Star Limited
         type: string
       region:
+        example: Liyue
         type: string
       senjata:
-        description: Sword, Claymore, Catalyst, Bow, Polearm
+        example: Polearm
         type: string
       sinergi:
+        example: Tidak Ada
         type: string
       ulangTahun:
+        example: 31 Desember
+        type: string
+    type: object
+  model.LoginRequest:
+    properties:
+      password:
+        example: admin123
+        type: string
+      username:
+        example: admin
         type: string
     type: object
   model.Peserta:
     properties:
       createdAt:
+        example: "2026-06-26T12:00:00Z"
         type: string
       id:
+        example: 1
         type: integer
       karakters:
         items:
           $ref: '#/definitions/model.PesertaKarakter'
         type: array
       nama:
+        example: Nanda
         type: string
       updatedAt:
+        example: "2026-06-26T12:00:00Z"
         type: string
     type: object
   model.PesertaKarakter:
     properties:
       id:
+        example: 1
         type: integer
       isC1:
+        example: false
         type: boolean
       karakter:
         $ref: '#/definitions/model.Karakter'
       karakterId:
+        example: 5
         type: integer
       pesertaId:
+        example: 1
         type: integer
     type: object
   model.Settings:
     properties:
       bgmUrl:
+        example: https://res.cloudinary.com/.../audio.mp3
         type: string
       free4StarHalf:
+        example: all
         type: string
       free4StarId:
+        example: 0
         type: integer
       id:
+        example: 1
         type: integer
       maxCost:
+        example: 7
         type: integer
     type: object
   model.User:
     properties:
       id:
+        example: 1
         type: integer
       role:
+        example: wasit
         type: string
       username:
+        example: admin
         type: string
     type: object
 info:
@@ -294,9 +356,7 @@ paths:
         name: request
         required: true
         schema:
-          additionalProperties:
-            type: string
-          type: object
+          $ref: '#/definitions/model.ChangePasswordRequest'
       produces:
       - application/json
       responses:
@@ -601,9 +661,7 @@ paths:
         name: request
         required: true
         schema:
-          additionalProperties:
-            type: string
-          type: object
+          $ref: '#/definitions/model.LoginRequest'
       produces:
       - application/json
       responses:
@@ -808,9 +866,7 @@ paths:
         name: request
         required: true
         schema:
-          additionalProperties:
-            type: string
-          type: object
+          $ref: '#/definitions/model.AuthRequest'
       produces:
       - application/json
       responses:

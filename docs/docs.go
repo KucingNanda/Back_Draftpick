@@ -300,10 +300,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/model.ChangePasswordRequest"
                         }
                     }
                 ],
@@ -769,10 +766,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/model.LoginRequest"
                         }
                     }
                 ],
@@ -1086,10 +1080,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/model.AuthRequest"
                         }
                     }
                 ],
@@ -1244,17 +1235,50 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "model.AuthRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "example": "admin123"
+                },
+                "role": {
+                    "type": "string",
+                    "example": "wasit"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "admin"
+                }
+            }
+        },
         "model.Bgm": {
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "nama": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Let the Wind Tell You"
                 },
                 "url": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://res.cloudinary.com/.../audio.mp3"
+                }
+            }
+        },
+        "model.ChangePasswordRequest": {
+            "type": "object",
+            "properties": {
+                "new_password": {
+                    "type": "string",
+                    "example": "admin456"
+                },
+                "old_password": {
+                    "type": "string",
+                    "example": "admin123"
                 }
             }
         },
@@ -1262,27 +1286,34 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-06-26T12:00:00Z"
                 },
                 "draftData": {
                     "description": "Berisi JSON DraftState",
-                    "type": "string"
+                    "type": "string",
+                    "example": "{\"turn\": 1, \"phase\": \"ban\"}"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "playerA": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Nanda"
                 },
                 "playerB": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Rizky"
                 },
                 "role": {
                     "description": "\"wasit\" atau \"peserta\"",
-                    "type": "string"
+                    "type": "string",
+                    "example": "wasit"
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-06-26T12:00:00Z"
                 }
             }
         },
@@ -1290,42 +1321,61 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "cost": {
-                    "description": "0 atau 1",
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "elemen": {
-                    "description": "Anemo, Geo, Electro, Dendro, Hydro, Pyro, Cryo, Flex",
-                    "type": "string"
+                    "type": "string",
+                    "example": "Geo"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "imageUrl": {
-                    "description": "Link Cloudinary",
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://res.cloudinary.com/.../zhongli.png"
                 },
                 "konstelasi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Lapis Dei"
                 },
                 "nama": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Zhongli"
                 },
                 "rarity": {
-                    "description": "4 Star, 5 Star Limited, dll",
-                    "type": "string"
+                    "type": "string",
+                    "example": "5 Star Limited"
                 },
                 "region": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Liyue"
                 },
                 "senjata": {
-                    "description": "Sword, Claymore, Catalyst, Bow, Polearm",
-                    "type": "string"
+                    "type": "string",
+                    "example": "Polearm"
                 },
                 "sinergi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Tidak Ada"
                 },
                 "ulangTahun": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "31 Desember"
+                }
+            }
+        },
+        "model.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "example": "admin123"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "admin"
                 }
             }
         },
@@ -1333,10 +1383,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "createdAt": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-06-26T12:00:00Z"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "karakters": {
                     "type": "array",
@@ -1345,10 +1397,12 @@ const docTemplate = `{
                     }
                 },
                 "nama": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Nanda"
                 },
                 "updatedAt": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-06-26T12:00:00Z"
                 }
             }
         },
@@ -1356,19 +1410,23 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "isC1": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": false
                 },
                 "karakter": {
                     "$ref": "#/definitions/model.Karakter"
                 },
                 "karakterId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 5
                 },
                 "pesertaId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -1376,19 +1434,24 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "bgmUrl": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://res.cloudinary.com/.../audio.mp3"
                 },
                 "free4StarHalf": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "all"
                 },
                 "free4StarId": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "maxCost": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 7
                 }
             }
         },
@@ -1396,13 +1459,16 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "role": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "wasit"
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "admin"
                 }
             }
         }
