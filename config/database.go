@@ -45,6 +45,12 @@ func ConnectDB() {
 	DB = database
 	fmt.Println("✅ Koneksi ke PostgreSQL BERHASIL!")
 
+	// Ganti nama kolom 'vision' menjadi 'elemen' jika kolom tersebut masih ada (sebelum AutoMigrate)
+	if DB.Migrator().HasColumn(&model.Karakter{}, "vision") {
+		DB.Exec("ALTER TABLE karakters RENAME COLUMN vision TO elemen")
+		fmt.Println("✅ Kolom 'vision' berhasil diubah menjadi 'elemen'")
+	}
+
 	// Menjalankan Auto Migration untuk membuat tabel otomatis
 	err = DB.AutoMigrate(&model.Karakter{}, &model.User{}, &model.Peserta{}, &model.PesertaKarakter{}, &model.Settings{}, &model.Bgm{}, &model.History{})
 	if err != nil {
