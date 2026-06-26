@@ -18,7 +18,6 @@ import (
 // @version 1.0
 // @description Dokumentasi API backend DraftPick menggunakan Golang Fiber, GORM, PostgreSQL, dan JWT.
 // @contact.name Praktikum Pemrograman III
-// @host 127.0.0.1:3000
 // @BasePath /
 // @schemes http https
 // @securityDefinitions.apikey BearerAuth
@@ -39,13 +38,6 @@ func main() {
 
 	// Panggil Router
 	router.SetupRoutes(app)
-
-	// Setup Swagger Host
-	swaggerHost := os.Getenv("SWAGGER_HOST")
-	if swaggerHost == "" {
-		swaggerHost = "127.0.0.1:3000" // Fallback untuk lokal
-	}
-	docs.SwaggerInfo.Host = swaggerHost
 
 	// Setup port dinamis untuk keperluan deployment (Alwaysdata/Render)
 	port := os.Getenv("PORT")

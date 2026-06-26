@@ -108,7 +108,6 @@ definitions:
       username:
         type: string
     type: object
-host: 127.0.0.1:3000
 info:
   contact:
     name: Praktikum Pemrograman III
