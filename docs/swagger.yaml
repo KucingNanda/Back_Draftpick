@@ -3,13 +3,10 @@ definitions:
   model.AuthRequest:
     properties:
       password:
-        example: admin123
-        type: string
-      role:
-        example: wasit
+        example: ""
         type: string
       username:
-        example: admin
+        example: ""
         type: string
     type: object
   model.Bgm:
@@ -98,10 +95,10 @@ definitions:
   model.LoginRequest:
     properties:
       password:
-        example: admin123
+        example: peserta123
         type: string
       username:
-        example: admin
+        example: peserta
         type: string
     type: object
   model.Peserta:
@@ -861,7 +858,7 @@ paths:
       - application/json
       description: Mendaftarkan peserta atau admin baru ke dalam sistem
       parameters:
-      - description: Payload register (username, password, role)
+      - description: Payload register (username, password)
         in: body
         name: request
         required: true

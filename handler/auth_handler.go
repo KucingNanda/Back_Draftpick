@@ -35,7 +35,7 @@ func GenerateJWT(user model.User) (string, error) {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param request body model.AuthRequest true "Payload register (username, password, role)"
+// @Param request body model.AuthRequest true "Payload register (username, password)"
 // @Success 201 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
 // @Failure 500 {object} map[string]interface{}
@@ -58,9 +58,6 @@ func Register(c *fiber.Ctx) error {
 	}
 
 	role := "peserta"
-	if input.Role == "wasit" || input.Role == "admin" {
-		role = "wasit" // Normalisasi ke wasit
-	}
 
 	newUser := model.User{
 		Username: input.Username,

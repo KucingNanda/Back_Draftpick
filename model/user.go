@@ -8,14 +8,13 @@ type User struct {
 }
 
 type AuthRequest struct {
-	Username string `json:"username" example:"admin"`
-	Password string `json:"password" example:"admin123"`
-	Role     string `json:"role" example:"wasit"`
+	Username string `json:"username" example:""`
+	Password string `json:"password" example:""`
 }
 
 type LoginRequest struct {
-	Username string `json:"username" example:"admin"`
-	Password string `json:"password" example:"admin123"`
+	Username string `json:"username" example:"peserta"`
+	Password string `json:"password" example:"peserta123"`
 }
 
 type ChangePasswordRequest struct {

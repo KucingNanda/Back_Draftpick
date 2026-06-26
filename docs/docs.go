@@ -1075,7 +1075,7 @@ const docTemplate = `{
                 "summary": "Register user baru",
                 "parameters": [
                     {
-                        "description": "Payload register (username, password, role)",
+                        "description": "Payload register (username, password)",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -1240,15 +1240,11 @@ const docTemplate = `{
             "properties": {
                 "password": {
                     "type": "string",
-                    "example": "admin123"
-                },
-                "role": {
-                    "type": "string",
-                    "example": "wasit"
+                    "example": ""
                 },
                 "username": {
                     "type": "string",
-                    "example": "admin"
+                    "example": ""
                 }
             }
         },
@@ -1371,11 +1367,11 @@ const docTemplate = `{
             "properties": {
                 "password": {
                     "type": "string",
-                    "example": "admin123"
+                    "example": "peserta123"
                 },
                 "username": {
                     "type": "string",
-                    "example": "admin"
+                    "example": "peserta"
                 }
             }
         },
