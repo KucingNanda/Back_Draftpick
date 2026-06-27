@@ -59,6 +59,9 @@ func SetupRoutes(app *fiber.App) {
 	protected.Post("/upload", handler.UploadImage)
 	protected.Post("/upload/audio", handler.UploadAudio)
 
+	// Settings (Protected)
+	protected.Put("/settings", middleware.RequireRole("wasit"), handler.UpdateSettings)
+
 
 	// Ganti password (semua user login)
 	protected.Put("/change-password", handler.ChangePassword)
