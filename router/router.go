@@ -41,9 +41,9 @@ func SetupRoutes(app *fiber.App) {
 	protected.Delete("/karakter/:id", middleware.RequireRole("wasit"), handler.DeleteKarakter) 
 
 	// Peserta (Protected)
-	protected.Post("/peserta", handler.AddPeserta)
-	protected.Put("/peserta/:id", handler.UpdatePeserta)
-	protected.Delete("/peserta/:id", handler.DeletePeserta)
+	protected.Post("/peserta", middleware.RequireRole("wasit"), handler.AddPeserta)
+	protected.Put("/peserta/:id", middleware.RequireRole("wasit"), handler.UpdatePeserta)
+	protected.Delete("/peserta/:id", middleware.RequireRole("wasit"), handler.DeletePeserta)
 
 	// BGM (Protected)
 	protected.Post("/bgm", middleware.RequireRole("wasit"), handler.AddBgm)
@@ -51,13 +51,13 @@ func SetupRoutes(app *fiber.App) {
 	protected.Delete("/bgm/:id", middleware.RequireRole("wasit"), handler.DeleteBgm)
 
 	// History (Protected)
-	protected.Post("/history", handler.SaveHistory)
+	protected.Post("/history", handler.SaveHistory) // Semua bisa save (atau biarkan jika draft bisa dimainkan peserta)
 	protected.Get("/history", handler.GetHistories)
-	protected.Delete("/history/:id", handler.DeleteHistory)
+	protected.Delete("/history/:id", middleware.RequireRole("wasit"), handler.DeleteHistory)
 
 	// Rute Upload Cloudinary (Protected)
-	protected.Post("/upload", handler.UploadImage)
-	protected.Post("/upload/audio", handler.UploadAudio)
+	protected.Post("/upload", middleware.RequireRole("wasit"), handler.UploadImage)
+	protected.Post("/upload/audio", middleware.RequireRole("wasit"), handler.UploadAudio)
 
 	// Settings (Protected)
 	protected.Put("/settings", middleware.RequireRole("wasit"), handler.UpdateSettings)
