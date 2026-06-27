@@ -83,7 +83,7 @@ func AddKarakter(c *fiber.Ctx) error {
 
 	err := repository.CreateKarakter(karakter)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "Gagal menyimpan karakter"})
+		return c.Status(500).JSON(fiber.Map{"error": "Gagal menyimpan karakter: " + err.Error()})
 	}
 
 	return c.Status(201).JSON(fiber.Map{
