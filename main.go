@@ -27,8 +27,10 @@ func main() {
 	// Panggil fungsi koneksi ke database sebelum server menyala
 	config.ConnectDB()
 
-	// Inisialisasi Fiber
-	app := fiber.New()
+	// Inisialisasi Fiber dengan batas BodyLimit yang ditingkatkan (20 MB)
+	app := fiber.New(fiber.Config{
+		BodyLimit: 20 * 1024 * 1024,
+	})
 
 	// Logger (Mencatat aktivitas API ke Terminal)
 	app.Use(logger.New())
