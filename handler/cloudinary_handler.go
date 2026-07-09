@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"os"
+	"time"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
@@ -65,13 +66,16 @@ func UploadAudio(c *fiber.Ctx) error {
 		return c.Status(500).JSON(fiber.Map{"error": "Kredensial Cloudinary tidak valid"})
 	}
 
-	ctx := context.Background()
+	// Gunakan context dengan timeout (misal 60 detik) untuk mencegah proses menggantung selamanya
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+
 	uploadResult, err := cld.Upload.Upload(ctx, file, uploader.UploadParams{
 		Folder:       "Draftpick/Assets",
-		ResourceType: "video", // Cloudinary menggunakan "video" untuk audio
+		ResourceType: "auto", // Gunakan auto agar Cloudinary mendeteksi format yang tepat, jangan paksakan "video"
 	})
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "Gagal mengunggah audio ke Cloudinary"})
+		return c.Status(500).JSON(fiber.Map{"error": "Gagal mengunggah audio ke Cloudinary: " + err.Error()})
 	}
 
 	return c.JSON(fiber.Map{
