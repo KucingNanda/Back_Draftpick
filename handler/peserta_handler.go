@@ -14,6 +14,7 @@ import (
 // @Description Mengambil daftar seluruh peserta
 // @Tags Peserta
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {array} model.Peserta
 // @Failure 500 {object} map[string]string
 // @Router /api/peserta [get]
@@ -30,6 +31,7 @@ func GetPesertas(c *fiber.Ctx) error {
 // @Description Mengambil satu data peserta spesifik berdasarkan ID
 // @Tags Peserta
 // @Produce json
+// @Security BearerAuth
 // @Param id path int true "ID Peserta"
 // @Success 200 {object} model.Peserta
 // @Failure 404 {object} map[string]string

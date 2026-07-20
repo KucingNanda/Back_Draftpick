@@ -19,8 +19,6 @@ func SetupRoutes(app *fiber.App) {
 	// API Publik (Hanya GET)
 	api.Get("/karakter", handler.GetKarakters)
 	api.Get("/karakter/:id", handler.GetKarakterByID)
-	api.Get("/peserta", handler.GetPesertas)
-	api.Get("/peserta/:id", handler.GetPesertaByID)
 	api.Get("/bgm", handler.GetBgms)
 	api.Get("/bgm/:id", handler.GetBgmByID)
 	api.Get("/settings", handler.GetSettings)
@@ -41,6 +39,8 @@ func SetupRoutes(app *fiber.App) {
 	protected.Delete("/karakter/:id", middleware.RequireRole("wasit"), handler.DeleteKarakter) 
 
 	// Peserta (Protected)
+	protected.Get("/peserta", handler.GetPesertas)
+	protected.Get("/peserta/:id", handler.GetPesertaByID)
 	protected.Post("/peserta", middleware.RequireRole("wasit"), handler.AddPeserta)
 	protected.Put("/peserta/:id", middleware.RequireRole("wasit"), handler.UpdatePeserta)
 	protected.Delete("/peserta/:id", middleware.RequireRole("wasit"), handler.DeletePeserta)
