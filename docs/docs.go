@@ -804,6 +804,11 @@ const docTemplate = `{
         },
         "/api/peserta": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Mengambil daftar seluruh peserta",
                 "produces": [
                     "application/json"
@@ -891,6 +896,11 @@ const docTemplate = `{
         },
         "/api/peserta/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Mengambil satu data peserta spesifik berdasarkan ID",
                 "produces": [
                     "application/json"

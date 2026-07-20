@@ -703,6 +703,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Ambil semua data peserta
       tags:
       - Peserta
@@ -803,6 +805,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Ambil detail data peserta berdasarkan ID
       tags:
       - Peserta
