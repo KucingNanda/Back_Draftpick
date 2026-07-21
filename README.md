@@ -1,8 +1,10 @@
 # Draft Pick Backend
 
-**Live API (Railway):** [https://backdraftpick-production.up.railway.app](https://backdraftpick-production.up.railway.app)
+**Status:** 🔴 Railway Trial Berakhir (Dijalankan secara lokal)
 
-**Swagger UI:** [https://backdraftpick-production.up.railway.app/docs](https://backdraftpick-production.up.railway.app/docs)
+**Local API:** `http://localhost:3000`
+
+**Local Swagger UI:** `http://localhost:3000/docs`
 
 Aplikasi *backend* super cepat berbasis **Golang** (Framework Fiber) untuk menyuplai *API endpoint* ke aplikasi simulasi *Draft Pick*. Dibekali dengan sistem manajemen database ORM otomatis via **GORM** dan **PostgreSQL**.
 
@@ -49,8 +51,6 @@ Aplikasi *backend* super cepat berbasis **Golang** (Framework Fiber) untuk menyu
    ```
 5. Selamat! API kini berjalan. Buka dokumentasi Swagger di: `http://localhost:3000/docs/index.html`.
 
-## 📦 Panduan Deployment (Railway)
-Aplikasi backend ini dideploy di **Railway**.
-1. **Penting:** Anda tidak mengunggah file `.env` ke GitHub.
-2. Anda harus menyalin isi variabel lingkungan di atas satu per satu ke menu **Variables** di proyek Railway Anda.
-3. Railway akan secara otomatis mendeteksi bahasa Golang, menjalankan `go build`, dan mengaktifkan *server* secara otomatis (Nixpacks).
+## 📦 Status Deployment
+> [!WARNING]
+> Aplikasi backend ini sebelumnya di-*deploy* di **Railway**. Namun karena keterbatasan masa *trial*, saat ini aplikasi **sepenuhnya dioperasikan secara lokal** untuk tujuan pengembangan pribadi. Proyek di Railway sudah dinonaktifkan/dihapus. Data tetap aman karena Database berada di penyedia pihak ketiga (Alwaysdata) dan Media Storage di Cloudinary.
