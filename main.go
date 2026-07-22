@@ -41,8 +41,11 @@ func main() {
 	// Panggil Router
 	router.SetupRoutes(app)
 
-	// Setup Swagger Host secara dinamis dari Railway
-	swaggerHost := os.Getenv("RAILWAY_PUBLIC_DOMAIN")
+	// Setup Swagger Host secara dinamis dari ENV, Railway, atau Fallback
+	swaggerHost := os.Getenv("SWAGGER_HOST")
+	if swaggerHost == "" {
+		swaggerHost = os.Getenv("RAILWAY_PUBLIC_DOMAIN")
+	}
 	if swaggerHost == "" {
 		swaggerHost = "127.0.0.1:3000" // Fallback untuk lokal
 	}
