@@ -3,24 +3,83 @@ package repository
 import (
 	"draftpick-api/config"
 	"draftpick-api/model"
+	"fmt"
 )
 
-// Mengambil semua data peserta beserta detail karakter Limited 5-Star miliknya
+// Mengambil semua data peserta resmi (peserta manual wasit atau member yang sudah dipromosikan jadi peserta)
 func GetAllPeserta() ([]model.Peserta, error) {
 	var pesertas []model.Peserta
-	// Preload "Karakters" (tabel join) dan "Karakters.Karakter" (detail karakternya)
-	result := config.DB.Preload("Karakters").Preload("Karakters.Karakter").Order("nama ASC").Find(&pesertas)
+	result := config.DB.
+		Joins("LEFT JOIN users ON users.id = peserta.user_id").
+		Where("peserta.user_id IS NULL OR users.role = ?", "peserta").
+		Preload("Karakters").
+		Preload("Karakters.Karakter").
+		Order("peserta.nama ASC").
+		Find(&pesertas)
 	return pesertas, result.Error
 }
 
 // Mengambil detail peserta berdasarkan ID
 func GetPesertaByID(id string) (*model.Peserta, error) {
 	var peserta model.Peserta
-	result := config.DB.Preload("Karakters").Preload("Karakters.Karakter").First(&peserta, id)
+	result := config.DB.Preload("User").Preload("Karakters").Preload("Karakters.Karakter").First(&peserta, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return &peserta, nil
+}
+
+// Mengambil profil peserta milik akun user tertentu
+func GetPesertaByUserID(userID interface{}) (*model.Peserta, error) {
+	var peserta model.Peserta
+	result := config.DB.Preload("Karakters").Preload("Karakters.Karakter").Where("user_id = ?", userID).First(&peserta)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &peserta, nil
+}
+
+// Menyimpan atau mengupdate profil peserta milik akun user yang sedang login
+func SaveMyPeserta(userID uint, input *model.Peserta) (*model.Peserta, error) {
+	var existing model.Peserta
+	err := config.DB.Where("user_id = ?", userID).First(&existing).Error
+
+	tx := config.DB.Begin()
+
+	if err != nil {
+		// Belum pernah mengisi biodata peserta, buat baru
+		input.UserID = &userID
+		if err := tx.Create(input).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+	} else {
+		// Sudah ada, perbarui nama
+		if err := tx.Model(&existing).Update("nama", input.Nama).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+		// Hapus karakter formasi lama
+		if err := tx.Where("peserta_id = ?", existing.ID).Delete(&model.PesertaKarakter{}).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+		// Masukkan karakter formasi baru
+		for i := range input.Karakters {
+			input.Karakters[i].PesertaID = existing.ID
+		}
+		if err := tx.Create(&input.Karakters).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+		input.ID = existing.ID
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, err
+	}
+
+	return GetPesertaByID(fmt.Sprintf("%d", input.ID))
 }
 
 // Menyimpan peserta baru beserta susunan 8 karakternya

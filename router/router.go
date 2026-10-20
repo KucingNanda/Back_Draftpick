@@ -31,7 +31,9 @@ func SetupRoutes(app *fiber.App) {
 	protected := api.Group("/", middleware.Protected())
 
 	// Users (Protected)
+	protected.Get("/me", handler.GetMe)
 	protected.Get("/users", middleware.RequireRole("wasit"), handler.GetUsers)
+	protected.Put("/users/:id/role", middleware.RequireRole("wasit"), handler.UpdateUserRole)
 
 	// Karakter (Protected)
 	protected.Post("/karakter", middleware.RequireRole("wasit"), handler.AddKarakter)          
@@ -41,6 +43,8 @@ func SetupRoutes(app *fiber.App) {
 	// Peserta (Protected)
 	protected.Get("/peserta", handler.GetPesertas)
 	protected.Get("/peserta/:id", handler.GetPesertaByID)
+	protected.Get("/my-peserta", handler.GetMyPeserta)
+	protected.Post("/my-peserta", handler.SaveMyPeserta)
 	protected.Post("/peserta", middleware.RequireRole("wasit"), handler.AddPeserta)
 	protected.Put("/peserta/:id", middleware.RequireRole("wasit"), handler.UpdatePeserta)
 	protected.Delete("/peserta/:id", middleware.RequireRole("wasit"), handler.DeletePeserta)

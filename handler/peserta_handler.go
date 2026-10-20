@@ -152,3 +152,77 @@ func DeletePeserta(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{"message": "Peserta berhasil dihapus"})
 }
+
+// GetMyPeserta godoc
+// @Summary Ambil biodata & karakter peserta milik akun sendiri
+// @Description Mengambil data profil peserta yang tertaut dengan akun user yang sedang login
+// @Tags Peserta
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {object} model.Peserta
+// @Failure 404 {object} map[string]string
+// @Router /api/my-peserta [get]
+func GetMyPeserta(c *fiber.Ctx) error {
+	userId := c.Locals("user_id")
+	peserta, err := repository.GetPesertaByUserID(userId)
+	if err != nil {
+		return c.Status(404).JSON(fiber.Map{"error": "Belum ada profil peserta yang dibuat"})
+	}
+	return c.JSON(peserta)
+}
+
+// SaveMyPeserta godoc
+// @Summary Simpan atau perbarui biodata & 8 karakter milik akun sendiri
+// @Description Menyimpan formasi 8 karakter Limited untuk akun member/peserta yang sedang login
+// @Tags Peserta
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param request body model.Peserta true "Payload peserta"
+// @Success 200 {object} model.Peserta
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/my-peserta [post]
+func SaveMyPeserta(c *fiber.Ctx) error {
+	userId := c.Locals("user_id")
+	var uID uint
+	switch v := userId.(type) {
+	case float64:
+		uID = uint(v)
+	case int:
+		uID = uint(v)
+	case uint:
+		uID = v
+	case string:
+		idParsed, _ := strconv.ParseUint(v, 10, 32)
+		uID = uint(idParsed)
+	}
+
+	if uID == 0 {
+		return c.Status(401).JSON(fiber.Map{"error": "User ID tidak valid"})
+	}
+
+	peserta := new(model.Peserta)
+	if err := c.BodyParser(peserta); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Format input tidak valid"})
+	}
+
+	if peserta.Nama == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Nama peserta wajib diisi"})
+	}
+
+	if len(peserta.Karakters) != 8 {
+		return c.Status(400).JSON(fiber.Map{"error": "Peserta harus mendaftarkan tepat 8 Karakter Limited"})
+	}
+
+	savedPeserta, err := repository.SaveMyPeserta(uID, peserta)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Gagal menyimpan formasi peserta"})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Profil peserta berhasil disimpan!",
+		"data":    savedPeserta,
+	})
+}
+

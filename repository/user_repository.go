@@ -30,3 +30,14 @@ func GetUsersByRole(role string) ([]model.User, error) {
 	err := config.DB.Select("id", "username", "role").Where("role = ?", role).Find(&users).Error
 	return users, err
 }
+
+func GetAllUsers() ([]model.User, error) {
+	var users []model.User
+	err := config.DB.Select("id", "username", "role").Order("id ASC").Find(&users).Error
+	return users, err
+}
+
+func UpdateUserRole(id interface{}, newRole string) error {
+	return config.DB.Model(&model.User{}).Where("id = ?", id).Update("role", newRole).Error
+}
+

@@ -57,7 +57,7 @@ func Register(c *fiber.Ctx) error {
 		return c.Status(500).JSON(fiber.Map{"error": "Gagal mengenkripsi password"})
 	}
 
-	role := "peserta"
+	role := "member"
 
 	newUser := model.User{
 		Username: input.Username,
@@ -78,6 +78,34 @@ func Register(c *fiber.Ctx) error {
 		},
 	})
 }
+
+// GetMe godoc
+// @Summary Ambil profil user yang sedang login
+// @Description Mengembalikan informasi user saat ini beserta statusnya
+// @Tags Auth
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Failure 401 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Router /api/me [get]
+func GetMe(c *fiber.Ctx) error {
+	userId := c.Locals("user_id")
+	user, err := repository.GetUserByID(userId)
+	if err != nil {
+		return c.Status(404).JSON(fiber.Map{"error": "User tidak ditemukan"})
+	}
+
+	peserta, _ := repository.GetPesertaByUserID(user.ID)
+
+	return c.JSON(fiber.Map{
+		"id":       user.ID,
+		"username": user.Username,
+		"role":     user.Role,
+		"peserta":  peserta,
+	})
+}
+
 
 // Login godoc
 // @Summary Login user

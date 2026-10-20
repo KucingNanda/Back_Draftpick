@@ -3,6 +3,8 @@ package handler
 import (
 	"draftpick-api/model"
 	"draftpick-api/repository"
+	"encoding/json"
+	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -14,9 +16,60 @@ type HistoryRequest struct {
 	DraftData string `json:"draftData"`
 }
 
+type DraftPayload struct {
+	PlayerA struct {
+		FirstHalf struct {
+			Picks []PickItem `json:"picks"`
+		} `json:"firstHalf"`
+		SecondHalf struct {
+			Picks []PickItem `json:"picks"`
+		} `json:"secondHalf"`
+	} `json:"playerA"`
+	PlayerB struct {
+		FirstHalf struct {
+			Picks []PickItem `json:"picks"`
+		} `json:"firstHalf"`
+		SecondHalf struct {
+			Picks []PickItem `json:"picks"`
+		} `json:"secondHalf"`
+	} `json:"playerB"`
+}
+
+type PickItem struct {
+	ID          uint   `json:"id"`
+	Nama        string `json:"nama"`
+	Cost        int    `json:"cost"`
+	WeaponLevel int    `json:"weaponLevel"`
+	IsC1        bool   `json:"isC1"`
+}
+
+func calculateTeamHalfCost(picks []PickItem) int {
+	cost := 0
+	for _, p := range picks {
+		if p.ID == 0 {
+			continue
+		}
+		// Base cost karakter
+		cost += p.Cost
+
+		// Penalti senjata B5: R1 (+2), R2 (+3)
+		if p.WeaponLevel == 1 {
+			cost += 2
+		} else if p.WeaponLevel == 2 {
+			cost += 3
+		}
+
+		// Penalti C1 (+2) pada karakter 5-Star Limited (Cost == 1)
+		if p.Cost == 1 && p.IsC1 {
+			cost += 2
+		}
+	}
+	return cost
+}
+
 // SaveHistory godoc
 // @Summary Simpan riwayat pertandingan
-// @Description Menyimpan data history match
+// @Description Menyimpan data history match dengan validasi Cost sisi server
 // @Tags History
 // @Security BearerAuth
 // @Accept json
@@ -35,6 +88,43 @@ func SaveHistory(c *fiber.Ctx) error {
 	if req.Role != "wasit" && req.Role != "peserta" {
 		return c.Status(403).JSON(fiber.Map{"error": "Role tidak diizinkan menyimpan riwayat"})
 	}
+
+	// === SERVER-SIDE COST VERIFICATION ===
+	settings, err := repository.GetSettings()
+	if err == nil && settings.MaxCost > 0 && req.DraftData != "" {
+		var draftState DraftPayload
+		if err := json.Unmarshal([]byte(req.DraftData), &draftState); err == nil {
+			costA1 := calculateTeamHalfCost(draftState.PlayerA.FirstHalf.Picks)
+			if costA1 > settings.MaxCost {
+				return c.Status(400).JSON(fiber.Map{
+					"error": fmt.Sprintf("Validasi Gagal: Akumulasi Cost %s (First Half) melebihi batas regulasi (%d / %d poin)", req.PlayerA, costA1, settings.MaxCost),
+				})
+			}
+
+			costA2 := calculateTeamHalfCost(draftState.PlayerA.SecondHalf.Picks)
+			if costA2 > settings.MaxCost {
+				return c.Status(400).JSON(fiber.Map{
+					"error": fmt.Sprintf("Validasi Gagal: Akumulasi Cost %s (Second Half) melebihi batas regulasi (%d / %d poin)", req.PlayerA, costA2, settings.MaxCost),
+				})
+			}
+
+			costB1 := calculateTeamHalfCost(draftState.PlayerB.FirstHalf.Picks)
+			if costB1 > settings.MaxCost {
+				return c.Status(400).JSON(fiber.Map{
+					"error": fmt.Sprintf("Validasi Gagal: Akumulasi Cost %s (First Half) melebihi batas regulasi (%d / %d poin)", req.PlayerB, costB1, settings.MaxCost),
+				})
+			}
+
+			costB2 := calculateTeamHalfCost(draftState.PlayerB.SecondHalf.Picks)
+			if costB2 > settings.MaxCost {
+				return c.Status(400).JSON(fiber.Map{
+					"error": fmt.Sprintf("Validasi Gagal: Akumulasi Cost %s (Second Half) melebihi batas regulasi (%d / %d poin)", req.PlayerB, costB2, settings.MaxCost),
+				})
+			}
+		}
+	}
+	// ======================================
+
 
 	limit := int64(10)
 	if req.Role == "wasit" {
