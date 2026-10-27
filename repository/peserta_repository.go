@@ -31,12 +31,15 @@ func GetPesertaByID(id string) (*model.Peserta, error) {
 
 // Mengambil profil peserta milik akun user tertentu
 func GetPesertaByUserID(userID interface{}) (*model.Peserta, error) {
-	var peserta model.Peserta
-	result := config.DB.Preload("Karakters").Preload("Karakters.Karakter").Where("user_id = ?", userID).First(&peserta)
-	if result.Error != nil {
-		return nil, result.Error
+	var pesertas []model.Peserta
+	err := config.DB.Preload("Karakters").Preload("Karakters.Karakter").Where("user_id = ?", userID).Limit(1).Find(&pesertas).Error
+	if err != nil {
+		return nil, err
 	}
-	return &peserta, nil
+	if len(pesertas) == 0 {
+		return nil, nil // Belum ada formasi yang dibuat (bukan error DB)
+	}
+	return &pesertas[0], nil
 }
 
 // Menyimpan atau mengupdate profil peserta milik akun user yang sedang login

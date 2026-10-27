@@ -166,7 +166,11 @@ func GetMyPeserta(c *fiber.Ctx) error {
 	userId := c.Locals("user_id")
 	peserta, err := repository.GetPesertaByUserID(userId)
 	if err != nil {
-		return c.Status(404).JSON(fiber.Map{"error": "Belum ada profil peserta yang dibuat"})
+		return c.Status(500).JSON(fiber.Map{"error": "Gagal mengambil data profil"})
+	}
+	if peserta == nil {
+		// Mengembalikan 200 OK dengan null jika user belum pernah membuat formasi
+		return c.JSON(nil)
 	}
 	return c.JSON(peserta)
 }
