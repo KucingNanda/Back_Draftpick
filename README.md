@@ -2,9 +2,9 @@
 
 **Status:** 🔴 Railway Trial Berakhir (Dijalankan secara lokal)
 
-**Local API:** `http://localhost:3000`
+**Local API:** `127.0.0.1:3000`
 
-**Local Swagger UI:** `http://localhost:3000/docs`
+**Local Swagger UI:** `127.0.0.1:3000/docs`
 
 Aplikasi *backend* super cepat berbasis **Golang** (Framework Fiber) untuk menyuplai *API endpoint* ke aplikasi simulasi *Draft Pick*. Dibekali dengan sistem manajemen database ORM otomatis via **GORM** dan **PostgreSQL**.
 
