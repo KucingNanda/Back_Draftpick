@@ -1,5 +1,16 @@
 basePath: /
 definitions:
+  handler.UserWithPesertaResponse:
+    properties:
+      id:
+        type: integer
+      peserta:
+        $ref: '#/definitions/model.Peserta'
+      role:
+        type: string
+      username:
+        type: string
+    type: object
   model.AuthRequest:
     properties:
       password:
@@ -154,6 +165,12 @@ definitions:
       maxCost:
         example: 7
         type: integer
+    type: object
+  model.UpdateUserRoleRequest:
+    properties:
+      role:
+        example: peserta
+        type: string
     type: object
   model.User:
     properties:
@@ -685,6 +702,62 @@ paths:
       summary: Login user
       tags:
       - Auth
+  /api/my-peserta:
+    get:
+      description: Mengambil data profil peserta yang tertaut dengan akun user yang sedang login
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Peserta'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Ambil biodata & karakter peserta milik akun sendiri
+      tags:
+      - Peserta
+    post:
+      consumes:
+      - application/json
+      description: Menyimpan formasi 8 karakter Limited untuk akun member/peserta yang sedang login
+      parameters:
+      - description: Payload peserta
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.Peserta'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Peserta'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Simpan atau perbarui biodata & 8 karakter milik akun sendiri
+      tags:
+      - Peserta
   /api/peserta:
     get:
       description: Mengambil daftar seluruh peserta
@@ -947,7 +1020,7 @@ paths:
       - Settings
   /api/users:
     get:
-      description: Mengambil semua data pengguna dengan role peserta
+      description: Mengambil semua data pengguna beserta data profil peserta miliknya (khusus wasit)
       produces:
       - application/json
       responses:
@@ -955,7 +1028,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.User'
+              $ref: '#/definitions/handler.UserWithPesertaResponse'
             type: array
         "500":
           description: Internal Server Error
@@ -965,7 +1038,50 @@ paths:
             type: object
       security:
       - BearerAuth: []
-      summary: Ambil daftar akun pengguna (Peserta)
+      summary: Ambil daftar seluruh akun pengguna
+      tags:
+      - Users
+  /api/users/{id}/role:
+    put:
+      consumes:
+      - application/json
+      description: Mengubah role user (misal dari member menjadi peserta atau sebaliknya)
+      parameters:
+      - description: ID User
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Payload role baru
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateUserRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Ubah role pengguna (Promote / Demote)
       tags:
       - Users
 schemes:
